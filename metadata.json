@@ -1,0 +1,7 @@
+{
+  "name": "UniChat",
+  "description": "A warm, inclusive multilingual communication platform helping the world speak as one.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
