@@ -22,7 +22,7 @@ const MOCK_USERS: User[] = [
   { id: 'u4', name: 'Pierre', avatar: AVATARS[3], nativeLanguage: 'French', themeColor: 'lavender' },
 ];
 
-export const StoreProvider = ({ children }: { children: ReactNode }) => {
+export const StoreProvider = ({ children }: { children?: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   
   const [settings, setSettings] = useState<AppSettings>({

@@ -65,6 +65,37 @@ export const translateMessage = async (
 };
 
 /**
+ * Transcribes audio blob to text.
+ */
+export const transcribeAudio = async (base64Audio: string, mimeType: string = 'audio/webm'): Promise<string | null> => {
+  if (!apiKey) return null;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: TEXT_MODEL,
+      contents: {
+        parts: [
+          {
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Audio
+            }
+          },
+          {
+            text: "Transcribe this audio exactly as spoken. Do not translate it yet. Return only the transcription text."
+          }
+        ]
+      }
+    });
+
+    return response.text || null;
+  } catch (error) {
+    console.error("Transcription error:", error);
+    return null;
+  }
+};
+
+/**
  * Converts text to speech using Gemini TTS.
  */
 export const synthesizeSpeech = async (text: string, voiceName: string = 'Puck'): Promise<string | null> => {

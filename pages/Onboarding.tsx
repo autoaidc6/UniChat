@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../context/Store';
 import { Layout } from '../components/Layout';
@@ -13,6 +13,16 @@ export const Onboarding: React.FC = () => {
   const [name, setName] = useState('');
   const [selectedLang, setSelectedLang] = useState(SUPPORTED_LANGUAGES[0].name);
   const [selectedAvatar, setSelectedAvatar] = useState(AVATARS[0]);
+
+  // Animation State
+  const [demoStep, setDemoStep] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDemoStep((prev) => (prev + 1) % 4);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleStart = () => {
     if (!name.trim()) return;
@@ -30,40 +40,59 @@ export const Onboarding: React.FC = () => {
   };
 
   return (
-    <Layout className="bg-gradient-to-br from-teal-50 to-peach-50">
-      <div className="flex-1 flex flex-col p-8 justify-center">
+    <Layout className="bg-gradient-to-br from-teal-50 via-white to-peach-50">
+      <div className="flex-1 flex flex-col p-8 justify-center min-h-screen">
         
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div className="bg-white p-4 rounded-full w-20 h-20 mx-auto mb-6 shadow-soft flex items-center justify-center">
-             <Globe className="w-10 h-10 text-teal-500" />
+        {/* Animated Header */}
+        <div className="text-center mb-8">
+          <div className="relative mx-auto w-64 h-32 mb-6">
+             {/* Left Bubble */}
+             <div className={`absolute left-0 top-0 transition-all duration-700 transform ${demoStep === 0 || demoStep === 1 ? 'opacity-100 translate-y-0' : 'opacity-40 translate-y-2'}`}>
+                <div className="bg-teal-500 text-white p-3 rounded-2xl rounded-bl-none text-sm font-bold shadow-lg">
+                   {demoStep === 0 ? "Hello friend!" : "¡Hola amigo!"}
+                </div>
+                <div className="text-xs text-teal-600 font-bold mt-1 text-left pl-1">
+                   {demoStep === 0 ? "🇺🇸 English" : "🇪🇸 Spanish"}
+                </div>
+             </div>
+
+             {/* Right Bubble */}
+             <div className={`absolute right-0 bottom-0 transition-all duration-700 transform ${demoStep === 2 || demoStep === 3 ? 'opacity-100 translate-y-0' : 'opacity-40 translate-y-2'}`}>
+                <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-br-none text-sm font-bold shadow-md">
+                   {demoStep === 2 ? "Konnichiwa!" : "Hello!"}
+                </div>
+                <div className="text-xs text-slate-400 font-bold mt-1 text-right pr-1">
+                   {demoStep === 2 ? "🇯🇵 Japanese" : "🇺🇸 English"}
+                </div>
+             </div>
           </div>
+
           <h1 className="text-4xl font-extrabold text-slate-800 mb-2 tracking-tight">UniChat</h1>
           <p className="text-slate-500 font-medium">One World. Many Voices.</p>
         </div>
 
         {/* Form */}
-        <div className="space-y-6 bg-white/60 backdrop-blur-sm p-6 rounded-3xl shadow-sm">
+        <div className="space-y-6 bg-white/70 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/50">
           
           {/* Name Input */}
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">What should we call you?</label>
+            <label className="block text-xs uppercase tracking-wider font-bold text-slate-400 mb-2">Display Name</label>
             <input 
               type="text" 
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your Name"
-              className="w-full p-4 rounded-2xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-400 text-lg"
+              placeholder="e.g. Alex"
+              className="w-full p-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-teal-400 text-slate-800 font-bold placeholder:font-normal"
             />
           </div>
 
           {/* Language Selection */}
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Your Native Language</label>
+            <label className="block text-xs uppercase tracking-wider font-bold text-slate-400 mb-2">I speak...</label>
             <select 
               value={selectedLang}
               onChange={(e) => setSelectedLang(e.target.value)}
-              className="w-full p-4 rounded-2xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-400 appearance-none"
+              className="w-full p-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-teal-400 appearance-none font-medium text-slate-800"
             >
               {SUPPORTED_LANGUAGES.map(lang => (
                 <option key={lang.code} value={lang.name}>
@@ -75,14 +104,14 @@ export const Onboarding: React.FC = () => {
 
           {/* Avatar Selection */}
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Pick an Avatar</label>
+            <label className="block text-xs uppercase tracking-wider font-bold text-slate-400 mb-2">Avatar</label>
             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
               {AVATARS.map((url) => (
                 <button
                   key={url}
                   onClick={() => setSelectedAvatar(url)}
                   className={`relative flex-shrink-0 w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${
-                    selectedAvatar === url ? 'border-teal-500 scale-110 shadow-md' : 'border-transparent opacity-70'
+                    selectedAvatar === url ? 'border-teal-500 scale-110 shadow-lg' : 'border-transparent opacity-60 grayscale hover:grayscale-0'
                   }`}
                 >
                   <img src={url} alt="avatar" className="w-full h-full object-cover" />
@@ -96,17 +125,17 @@ export const Onboarding: React.FC = () => {
         <button 
           onClick={handleStart}
           disabled={!name.trim()}
-          className={`mt-10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 text-white font-bold text-lg shadow-lg transition-all ${
-            name.trim() ? 'bg-teal-500 hover:bg-teal-600 shadow-teal-200' : 'bg-slate-300 cursor-not-allowed'
+          className={`mt-8 w-full py-4 rounded-2xl flex items-center justify-center gap-2 text-white font-bold text-lg shadow-xl shadow-teal-100 transition-all transform active:scale-95 ${
+            name.trim() ? 'bg-teal-500 hover:bg-teal-600' : 'bg-slate-300 cursor-not-allowed'
           }`}
         >
           Start Chatting <ArrowRight className="w-5 h-5" />
         </button>
 
-        <p className="text-center text-xs text-slate-400 mt-6">
-          <Sparkles className="w-3 h-3 inline mr-1" />
-          AI-Powered Real-time Translation
-        </p>
+        <div className="text-center mt-6 flex justify-center items-center gap-2 text-slate-400">
+           <Sparkles className="w-4 h-4 text-peach-400" />
+           <span className="text-xs font-medium">Powered by Gemini AI</span>
+        </div>
 
       </div>
     </Layout>

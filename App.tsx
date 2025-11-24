@@ -6,7 +6,7 @@ import { Home } from './pages/Home';
 import { Chat } from './pages/Chat';
 import { Settings } from './pages/Settings';
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
   const { currentUser } = useStore();
   if (!currentUser) {
     return <Navigate to="/" replace />;
