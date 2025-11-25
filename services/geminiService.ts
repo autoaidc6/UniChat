@@ -17,6 +17,60 @@ interface TranslationResult {
   culturalContext?: string;
 }
 
+// --- Audio Helper Functions ---
+
+const base64ToUint8Array = (base64: string): Uint8Array => {
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+};
+
+const createWavHeader = (dataLength: number, sampleRate: number, numChannels: number, bitsPerSample: number): Uint8Array => {
+  const header = new ArrayBuffer(44);
+  const view = new DataView(header);
+  
+  const writeString = (view: DataView, offset: number, string: string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+
+  // RIFF identifier
+  writeString(view, 0, 'RIFF');
+  // RIFF chunk length
+  view.setUint32(4, 36 + dataLength, true);
+  // WAVE identifier
+  writeString(view, 8, 'WAVE');
+  // fmt chunk identifier
+  writeString(view, 12, 'fmt ');
+  // fmt chunk length
+  view.setUint32(16, 16, true);
+  // Sample format (1 is PCM)
+  view.setUint16(20, 1, true);
+  // Channel count
+  view.setUint16(22, numChannels, true);
+  // Sample rate
+  view.setUint32(24, sampleRate, true);
+  // Byte rate (sampleRate * blockAlign)
+  view.setUint32(28, sampleRate * numChannels * (bitsPerSample / 8), true);
+  // Block align (numChannels * bitsPerSample / 8)
+  view.setUint16(32, numChannels * (bitsPerSample / 8), true);
+  // Bits per sample
+  view.setUint16(34, bitsPerSample, true);
+  // data chunk identifier
+  writeString(view, 36, 'data');
+  // data chunk length
+  view.setUint32(40, dataLength, true);
+
+  return new Uint8Array(header);
+};
+
+// --- Service Methods ---
+
 /**
  * Translates text and extracts cultural context using structured JSON output.
  */
@@ -96,7 +150,7 @@ export const transcribeAudio = async (base64Audio: string, mimeType: string = 'a
 };
 
 /**
- * Converts text to speech using Gemini TTS.
+ * Converts text to speech using Gemini TTS and returns a WAV Blob URL.
  */
 export const synthesizeSpeech = async (text: string, voiceName: string = 'Puck'): Promise<string | null> => {
   if (!apiKey) return null;
@@ -118,7 +172,12 @@ export const synthesizeSpeech = async (text: string, voiceName: string = 'Puck')
     const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     if (!base64Audio) return null;
 
-    return `data:audio/mp3;base64,${base64Audio}`;
+    // Convert Raw PCM (24kHz, 1 channel, 16-bit) to WAV
+    const pcmData = base64ToUint8Array(base64Audio);
+    const wavHeader = createWavHeader(pcmData.length, 24000, 1, 16);
+    const wavBlob = new Blob([wavHeader, pcmData], { type: 'audio/wav' });
+
+    return URL.createObjectURL(wavBlob);
 
   } catch (error) {
     console.error("TTS error:", error);

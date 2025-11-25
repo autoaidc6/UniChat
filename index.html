@@ -5,15 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UniChat – One World. Many Voices.</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Nunito', 'sans-serif'],
+              sans: ['Inter', 'sans-serif'],
+              heading: ['Nunito', 'sans-serif'],
             },
             colors: {
+              slate: {
+                850: '#1e293b', // Custom dark slate
+                900: '#0f172a',
+              },
               peach: {
                 50: '#fff7ed',
                 100: '#ffedd5',
@@ -48,18 +53,30 @@
     </script>
     <style>
       /* Custom scrollbar for a cleaner look */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
       ::-webkit-scrollbar {
-        width: 6px;
+        width: 4px;
       }
       ::-webkit-scrollbar-track {
         background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: #ddd6fe;
+        background: #cbd5e1;
         border-radius: 10px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #c4b5fd;
+        background: #94a3b8;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
       }
     </style>
   <script type="importmap">
@@ -76,7 +93,7 @@
 }
 </script>
 </head>
-  <body class="bg-slate-50 text-slate-800">
-    <div id="root"></div>
+  <body class="bg-gray-100 text-slate-800 flex items-center justify-center min-h-screen">
+    <div id="root" class="w-full h-full flex justify-center"></div>
   </body>
 </html>

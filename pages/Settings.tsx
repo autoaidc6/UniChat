@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../context/Store';
 import { Layout } from '../components/Layout';
-import { ArrowLeft, Languages, BookOpen, Volume2, Shield } from 'lucide-react';
+import { ArrowLeft, Languages, BookOpen, Volume2, Shield, Moon, Bell } from 'lucide-react';
 
 export const Settings: React.FC = () => {
   const navigate = useNavigate();
@@ -13,91 +13,123 @@ export const Settings: React.FC = () => {
     desc, 
     value, 
     onChange, 
-    icon: Icon 
+    icon: Icon,
+    color = "text-teal-500"
   }: { 
     label: string, 
     desc: string, 
     value: boolean, 
     onChange: (v: boolean) => void,
-    icon: any
+    icon: any,
+    color?: string
   }) => (
-    <div className="flex items-center justify-between py-4 border-b border-slate-100 last:border-0">
+    <div className="flex items-center justify-between py-5 border-b border-slate-50 last:border-0">
       <div className="flex items-start gap-4">
-        <div className="p-2 bg-slate-50 rounded-lg text-teal-600">
+        <div className={`p-2.5 bg-slate-50 rounded-xl ${color}`}>
            <Icon className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-bold text-slate-800">{label}</h3>
-          <p className="text-xs text-slate-400 max-w-[200px]">{desc}</p>
+          <h3 className="font-bold text-slate-800 text-[15px]">{label}</h3>
+          <p className="text-xs font-medium text-slate-400 max-w-[200px] mt-0.5">{desc}</p>
         </div>
       </div>
       <button 
         onClick={() => onChange(!value)}
-        className={`w-12 h-6 rounded-full transition-colors relative ${value ? 'bg-teal-500' : 'bg-slate-300'}`}
+        className={`w-11 h-6 rounded-full transition-colors relative ${value ? 'bg-teal-500' : 'bg-slate-200'}`}
       >
-        <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${value ? 'translate-x-6' : 'translate-x-0'}`} />
+        <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform shadow-sm ${value ? 'translate-x-5' : 'translate-x-0'}`} />
       </button>
     </div>
   );
 
   return (
     <Layout>
-      <div className="bg-white px-4 py-4 shadow-sm flex items-center gap-3 sticky top-0 z-20">
-        <button onClick={() => navigate('/home')} className="text-slate-600">
+      <div className="bg-white px-6 pt-8 pb-4 flex items-center gap-4 z-20">
+        <button onClick={() => navigate('/home')} className="p-2 -ml-2 text-slate-400 hover:text-slate-800 rounded-full transition-colors">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-xl font-bold text-slate-800">Settings</h1>
+        <h1 className="text-2xl font-heading font-bold text-slate-800">Settings</h1>
       </div>
 
-      <div className="p-6 space-y-2">
+      <div className="p-6 pt-2 space-y-8 flex-1 overflow-y-auto bg-white">
         
         {/* Profile Card */}
-        <div className="bg-gradient-to-r from-teal-50 to-peach-50 p-6 rounded-3xl flex items-center gap-4 mb-8">
-          <img src={currentUser?.avatar} alt="Me" className="w-16 h-16 rounded-full border-4 border-white shadow-sm" />
+        <div className="bg-slate-900 p-6 rounded-[2rem] flex items-center gap-5 shadow-xl shadow-slate-200">
+          <div className="relative">
+             <img src={currentUser?.avatar} alt="Me" className="w-16 h-16 rounded-full border-4 border-slate-800 shadow-sm" />
+             <div className="absolute bottom-0 right-0 p-1 bg-teal-500 rounded-full border-2 border-slate-800"></div>
+          </div>
           <div>
-            <h2 className="font-bold text-lg text-slate-800">{currentUser?.name}</h2>
-            <p className="text-teal-600 text-sm bg-white/50 px-2 rounded-md inline-block">
+            <h2 className="font-bold text-xl text-white font-heading">{currentUser?.name}</h2>
+            <p className="text-slate-400 text-sm font-medium">Native Language</p>
+            <p className="text-teal-400 font-bold text-sm mt-0.5 flex items-center gap-1">
               {currentUser?.nativeLanguage}
             </p>
           </div>
         </div>
 
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Translation & AI</h3>
-        <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-50">
-          <Toggle 
-            label="Dual Display" 
-            desc="Show both original and translated messages in chat bubbles."
-            value={settings.showOriginal} 
-            onChange={(v) => updateSettings({ showOriginal: v })}
-            icon={Languages}
-          />
-          <Toggle 
-            label="Cultural Context" 
-            desc="AI explains idioms, slang, and emotion."
-            value={settings.showCulturalContext} 
-            onChange={(v) => updateSettings({ showCulturalContext: v })}
-            icon={BookOpen}
-          />
-           <Toggle 
-            label="Auto-Play Voice" 
-            desc="Automatically speak incoming translations."
-            value={settings.autoPlayVoice} 
-            onChange={(v) => updateSettings({ autoPlayVoice: v })}
-            icon={Volume2}
-          />
+        <div>
+           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 ml-2">Preferences</h3>
+           <div className="bg-white rounded-3xl p-1 shadow-sm border border-slate-100">
+             <div className="px-4">
+              <Toggle 
+                label="Dual Display" 
+                desc="Show original and translated text."
+                value={settings.showOriginal} 
+                onChange={(v) => updateSettings({ showOriginal: v })}
+                icon={Languages}
+                color="text-indigo-500"
+              />
+              <Toggle 
+                label="Cultural Context" 
+                desc="AI explanations for idioms."
+                value={settings.showCulturalContext} 
+                onChange={(v) => updateSettings({ showCulturalContext: v })}
+                icon={BookOpen}
+                color="text-amber-500"
+              />
+               <Toggle 
+                label="Auto-Play Voice" 
+                desc="Speak incoming translations."
+                value={settings.autoPlayVoice} 
+                onChange={(v) => updateSettings({ autoPlayVoice: v })}
+                icon={Volume2}
+                color="text-teal-500"
+              />
+            </div>
+           </div>
         </div>
 
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-6">Privacy</h3>
-        <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-50">
-           <div className="flex items-center gap-4 py-2 opacity-50">
-             <div className="p-2 bg-slate-50 rounded-lg text-slate-400">
-               <Shield className="w-5 h-5" />
-             </div>
-             <div>
-               <h3 className="font-bold text-slate-800">End-to-End Encryption</h3>
-               <p className="text-xs text-slate-400">Always active for your safety.</p>
-             </div>
+        <div>
+           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 ml-2">App Settings</h3>
+           <div className="bg-white rounded-3xl p-1 shadow-sm border border-slate-100">
+             <div className="px-4">
+              <Toggle 
+                label="Dark Mode" 
+                desc="Easier on the eyes."
+                value={false} 
+                onChange={() => {}}
+                icon={Moon}
+                color="text-violet-500"
+              />
+               <Toggle 
+                label="Notifications" 
+                desc="Messages and groups."
+                value={true} 
+                onChange={() => {}}
+                icon={Bell}
+                color="text-pink-500"
+              />
+            </div>
            </div>
+        </div>
+
+        <div className="text-center pt-8 pb-4 opacity-50">
+           <div className="flex justify-center items-center gap-2 mb-2">
+             <Shield className="w-4 h-4 text-slate-400" />
+             <span className="text-xs font-bold text-slate-500">Secure & Encrypted</span>
+           </div>
+           <p className="text-[10px] text-slate-400">UniChat v1.0.2 • Built with Gemini</p>
         </div>
 
       </div>
