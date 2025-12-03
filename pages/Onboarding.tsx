@@ -18,7 +18,7 @@ export const Onboarding: React.FC = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDemoStep((prev) => (prev + 1) % 4);
+      setDemoStep((prev) => (prev + 1) % 6); // Increased steps for Arabic
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -50,22 +50,22 @@ export const Onboarding: React.FC = () => {
         <div className="text-center mb-8">
           <div className="relative mx-auto w-64 h-32 mb-6">
              {/* Left Bubble */}
-             <div className={`absolute left-0 top-0 transition-all duration-700 transform ${demoStep === 0 || demoStep === 1 ? 'opacity-100 translate-y-0' : 'opacity-40 translate-y-2'}`}>
-                <div className="bg-teal-500 text-white p-3 rounded-2xl rounded-bl-none text-sm font-bold shadow-lg">
-                   {demoStep === 0 ? "Hello friend!" : "¡Hola amigo!"}
+             <div className={`absolute left-0 top-0 transition-all duration-700 transform ${demoStep % 2 === 0 ? 'opacity-100 translate-y-0' : 'opacity-40 translate-y-2'}`}>
+                <div className="bg-teal-500 text-white p-3 rounded-2xl rounded-bl-none text-sm font-bold shadow-lg" dir="auto">
+                   {demoStep === 0 ? "Hello friend!" : demoStep === 2 ? "¡Hola amigo!" : "أهلاً صديقي!"}
                 </div>
                 <div className="text-xs text-teal-600 font-bold mt-1 text-left pl-1">
-                   {demoStep === 0 ? "🇺🇸 English" : "🇪🇸 Spanish"}
+                   {demoStep === 0 ? "🇺🇸 English" : demoStep === 2 ? "🇪🇸 Spanish" : "🇸🇦 Arabic"}
                 </div>
              </div>
 
              {/* Right Bubble */}
-             <div className={`absolute right-0 bottom-0 transition-all duration-700 transform ${demoStep === 2 || demoStep === 3 ? 'opacity-100 translate-y-0' : 'opacity-40 translate-y-2'}`}>
-                <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-br-none text-sm font-bold shadow-md">
-                   {demoStep === 2 ? "Konnichiwa!" : "Hello!"}
+             <div className={`absolute right-0 bottom-0 transition-all duration-700 transform ${demoStep % 2 !== 0 ? 'opacity-100 translate-y-0' : 'opacity-40 translate-y-2'}`}>
+                <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-br-none text-sm font-bold shadow-md" dir="auto">
+                   {demoStep === 1 ? "Hello!" : demoStep === 3 ? "Konnichiwa!" : "Ahlan!"}
                 </div>
                 <div className="text-xs text-slate-400 font-bold mt-1 text-right pr-1">
-                   {demoStep === 2 ? "🇯🇵 Japanese" : "🇺🇸 English"}
+                   {demoStep === 1 ? "🇺🇸 English" : demoStep === 3 ? "🇯🇵 Japanese" : "🇸🇦 Arabic"}
                 </div>
              </div>
           </div>

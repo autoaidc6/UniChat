@@ -22,6 +22,7 @@ const MOCK_USERS: User[] = [
   { id: 'u2', name: 'Aiko', avatar: AVATARS[1], nativeLanguage: 'Japanese', themeColor: 'teal', status: 'online' },
   { id: 'u3', name: 'Elena', avatar: AVATARS[2], nativeLanguage: 'Spanish', themeColor: 'peach', status: 'offline' },
   { id: 'u4', name: 'Pierre', avatar: AVATARS[3], nativeLanguage: 'French', themeColor: 'lavender', status: 'online' },
+  { id: 'u5', name: 'Omar', avatar: AVATARS[4], nativeLanguage: 'Arabic', themeColor: 'teal', status: 'online' },
 ];
 
 export const StoreProvider = ({ children }: { children?: ReactNode }) => {
@@ -59,6 +60,24 @@ export const StoreProvider = ({ children }: { children?: ReactNode }) => {
       messages: [],
       lastMessagePreview: 'Start a new conversation',
       updatedAt: Date.now() - 200000,
+      isGroup: false,
+    },
+    {
+      id: 'c3',
+      participants: [MOCK_USERS[3]], // Omar
+      messages: [
+        {
+          id: 'm_ar_1',
+          senderId: 'u5',
+          timestamp: Date.now() - 50000,
+          originalText: 'مرحباً، كيف حالك اليوم؟',
+          originalLanguage: 'Arabic',
+          translatedText: 'Hello, how are you today?',
+          culturalContext: 'A common polite greeting in Arabic.'
+        }
+      ],
+      lastMessagePreview: 'Hello, how are you today?',
+      updatedAt: Date.now() - 50000,
       isGroup: false,
     }
   ]);
