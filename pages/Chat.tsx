@@ -5,7 +5,6 @@ import { Layout } from '../components/Layout';
 import { translateMessage, generateBotReply, synthesizeSpeech, transcribeAudio } from '../services/geminiService';
 import { ArrowLeft, Mic, Send, Volume2, Info, Languages, Loader2, StopCircle, MoreVertical, Phone, Video, Plus } from 'lucide-react';
 import { Message, SUPPORTED_LANGUAGES } from '../types';
-import { v4 as uuidv4 } from 'uuid';
 
 export const Chat: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,7 +36,7 @@ export const Chat: React.FC = () => {
     setInputText(''); 
 
     const userMsg: Message = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       senderId: currentUser.id,
       timestamp: Date.now(),
       originalText: textToSend,
@@ -78,7 +77,7 @@ export const Chat: React.FC = () => {
       }
 
       const botMsg: Message = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         senderId: otherParticipant.id,
         timestamp: Date.now(),
         originalText: botReply.originalText,
@@ -232,12 +231,12 @@ export const Chat: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="text-[15px] leading-relaxed font-sans">
+                  <div className="text-[15px] leading-relaxed font-sans" dir="auto">
                      {isMe ? msg.originalText : (msg.translatedText || msg.originalText)}
                   </div>
 
                   {(!isMe && settings.showOriginal) && (
-                     <div className="mt-2 pt-2 border-t border-slate-100 text-xs text-slate-400 italic font-medium">
+                     <div className="mt-2 pt-2 border-t border-slate-100 text-xs text-slate-400 italic font-medium" dir="auto">
                         {msg.originalText}
                      </div>
                   )}
@@ -300,6 +299,7 @@ export const Chat: React.FC = () => {
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             placeholder={isRecording ? "Recording..." : `Message in ${currentUser.nativeLanguage}...`}
             disabled={isRecording}
+            dir="auto"
             className="flex-1 bg-transparent focus:outline-none text-slate-700 placeholder:text-slate-400 h-full py-2 px-2 font-medium"
           />
 

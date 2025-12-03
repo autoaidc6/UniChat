@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UniChat – One World. Many Voices.</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              heading: ['Nunito', 'sans-serif'],
+              sans: ['Inter', 'Noto Sans Arabic', 'sans-serif'],
+              heading: ['Nunito', 'Noto Sans Arabic', 'sans-serif'],
             },
             colors: {
               slate: {
@@ -45,6 +45,9 @@
                 400: '#a78bfa',
                 500: '#8b5cf6',
                 600: '#7c3aed',
+              },
+              emerald: {
+                400: '#34d399',
               }
             }
           }

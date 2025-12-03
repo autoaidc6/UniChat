@@ -11,6 +11,7 @@ export interface User {
   avatar: string;
   nativeLanguage: string;
   themeColor: 'peach' | 'teal' | 'lavender';
+  status?: 'online' | 'offline';
 }
 
 export interface Message {
@@ -53,6 +54,7 @@ export const SUPPORTED_LANGUAGES = [
   { code: 'ko', name: 'Korean', flag: '🇰🇷' },
   { code: 'hi', name: 'Hindi', flag: '🇮🇳' },
   { code: 'it', name: 'Italian', flag: '🇮🇹' },
+  { code: 'ar', name: 'Arabic', flag: '🇸🇦' },
 ];
 
 export const AVATARS = [
