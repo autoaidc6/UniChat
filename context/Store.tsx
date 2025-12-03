@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { User, Conversation, AppSettings, Message, AVATARS } from '../types';
-import { v4 as uuidv4 } from 'uuid';
 
 interface AppState {
   currentUser: User | null;
@@ -15,11 +14,14 @@ interface AppState {
 
 const StoreContext = createContext<AppState | undefined>(undefined);
 
+// Helper for safe ID generation without external deps
+const generateId = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
 // Initial Mock Data
 const MOCK_USERS: User[] = [
-  { id: 'u2', name: 'Aiko', avatar: AVATARS[1], nativeLanguage: 'Japanese', themeColor: 'teal' },
-  { id: 'u3', name: 'Elena', avatar: AVATARS[2], nativeLanguage: 'Spanish', themeColor: 'peach' },
-  { id: 'u4', name: 'Pierre', avatar: AVATARS[3], nativeLanguage: 'French', themeColor: 'lavender' },
+  { id: 'u2', name: 'Aiko', avatar: AVATARS[1], nativeLanguage: 'Japanese', themeColor: 'teal', status: 'online' },
+  { id: 'u3', name: 'Elena', avatar: AVATARS[2], nativeLanguage: 'Spanish', themeColor: 'peach', status: 'offline' },
+  { id: 'u4', name: 'Pierre', avatar: AVATARS[3], nativeLanguage: 'French', themeColor: 'lavender', status: 'online' },
 ];
 
 export const StoreProvider = ({ children }: { children?: ReactNode }) => {
@@ -80,7 +82,7 @@ export const StoreProvider = ({ children }: { children?: ReactNode }) => {
   };
 
   const createConversation = (participants: User[]) => {
-    const newId = uuidv4();
+    const newId = generateId();
     const newConv: Conversation = {
       id: newId,
       participants,

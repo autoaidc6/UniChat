@@ -4,7 +4,6 @@ import { useStore } from '../context/Store';
 import { Layout } from '../components/Layout';
 import { AVATARS, SUPPORTED_LANGUAGES, User } from '../types';
 import { ArrowRight, Globe, Sparkles } from 'lucide-react';
-import { v4 as uuidv4 } from 'uuid';
 
 export const Onboarding: React.FC = () => {
   const { setCurrentUser } = useStore();
@@ -27,12 +26,16 @@ export const Onboarding: React.FC = () => {
   const handleStart = () => {
     if (!name.trim()) return;
     
+    // Simple random ID
+    const newId = Math.random().toString(36).substring(2, 15);
+    
     const newUser: User = {
-      id: uuidv4(),
+      id: newId,
       name,
       avatar: selectedAvatar,
       nativeLanguage: selectedLang,
       themeColor: 'teal',
+      status: 'online'
     };
     
     setCurrentUser(newUser);

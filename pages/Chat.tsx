@@ -29,6 +29,8 @@ export const Chat: React.FC = () => {
 
   const otherParticipant = conversation.participants.find(p => p.id !== currentUser.id) || conversation.participants[0];
 
+  const generateId = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
   const handleSendMessage = async (overrideText?: string, overrideAudioUrl?: string, isVoiceMessage: boolean = false) => {
     const textToSend = overrideText || inputText;
     if (!textToSend.trim()) return;
@@ -36,7 +38,7 @@ export const Chat: React.FC = () => {
     setInputText(''); 
 
     const userMsg: Message = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       senderId: currentUser.id,
       timestamp: Date.now(),
       originalText: textToSend,
@@ -77,7 +79,7 @@ export const Chat: React.FC = () => {
       }
 
       const botMsg: Message = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         senderId: otherParticipant.id,
         timestamp: Date.now(),
         originalText: botReply.originalText,
