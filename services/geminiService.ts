@@ -2,7 +2,7 @@ import { GoogleGenAI, Type, Modality } from "@google/genai";
 
 // Ensure API key is present
 const apiKey = process.env.API_KEY;
-if (!apiKey) {
+if (typeof process !== 'undefined' && !apiKey) {
   console.error("Missing API_KEY in environment variables");
 }
 
@@ -80,12 +80,16 @@ export const translateMessage = async (
   sourceLanguage: string,
   includeCulturalContext: boolean
 ): Promise<TranslationResult> => {
-  if (!apiKey) return { translatedText: "API Key Missing" };
+  if (!apiKey) return { translatedText: text, culturalContext: "API Key missing" };
 
   const prompt = `
     Translate the following text from ${sourceLanguage} to ${targetLanguage}.
-    Maintain the tone, emotion, and nuance.
-    ${includeCulturalContext ? 'If there are idioms, slang, or cultural references, explain them briefly in the culturalContext field.' : ''}
+    
+    Guidelines:
+    1. Maintain the original tone, emotion, and nuance.
+    2. If translating to Arabic, use Modern Standard Arabic (MSA) or a natural, polite dialect suitable for a chat application.
+    3. Ensure correct grammar and script direction.
+    ${includeCulturalContext ? '4. If there are idioms, slang, or cultural references, explain them briefly in the culturalContext field.' : ''}
     
     Text to translate: "${text}"
   `;
@@ -136,7 +140,7 @@ export const transcribeAudio = async (base64Audio: string, mimeType: string = 'a
             }
           },
           {
-            text: "Transcribe this audio exactly as spoken. Do not translate it yet. Return only the transcription text."
+            text: "Transcribe the spoken audio exactly as it sounds in its original language. Do not translate it. If the audio is in Arabic, transcribe it using Arabic script. Return ONLY the transcription."
           }
         ]
       }
@@ -153,7 +157,7 @@ export const transcribeAudio = async (base64Audio: string, mimeType: string = 'a
  * Converts text to speech using Gemini TTS and returns a WAV Blob URL.
  */
 export const synthesizeSpeech = async (text: string, voiceName: string = 'Puck'): Promise<string | null> => {
-  if (!apiKey) return null;
+  if (!apiKey || !text) return null;
 
   try {
     const response = await ai.models.generateContent({
@@ -201,6 +205,7 @@ export const generateBotReply = async (
     You are ${botName}, a friendly person speaking ${botLanguage}. 
     You are chatting with a friend who speaks ${userLanguage}.
     Reply to the last message naturally in ${botLanguage}.
+    If ${botLanguage} is Arabic, use Arabic script.
     Keep it short (under 20 words).
     
     History:

@@ -17,6 +17,8 @@ export const Chat: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   
+  // Ref to track the current audio element to avoid overlapping sounds
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,11 +27,31 @@ export const Chat: React.FC = () => {
     }
   }, [conversation?.messages, isProcessing]);
 
+  // Clean up audio on unmount
+  useEffect(() => {
+    return () => {
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current = null;
+      }
+    };
+  }, []);
+
   if (!conversation || !currentUser) return null;
 
   const otherParticipant = conversation.participants.find(p => p.id !== currentUser.id) || conversation.participants[0];
 
   const generateId = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+  const playAudio = (url: string) => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.currentTime = 0;
+    }
+    const audio = new Audio(url);
+    currentAudioRef.current = audio;
+    audio.play().catch(e => console.error("Playback failed", e));
+  };
 
   const handleSendMessage = async (overrideText?: string, overrideAudioUrl?: string, isVoiceMessage: boolean = false) => {
     const textToSend = overrideText || inputText;
@@ -43,7 +65,7 @@ export const Chat: React.FC = () => {
       timestamp: Date.now(),
       originalText: textToSend,
       originalLanguage: currentUser.nativeLanguage,
-      translatedText: textToSend,
+      translatedText: textToSend, // Initially same
       audioUrl: overrideAudioUrl,
       isVoice: isVoiceMessage
     };
@@ -73,6 +95,7 @@ export const Chat: React.FC = () => {
       );
 
       let audioUrl: string | undefined = undefined;
+      // Auto-synthesize translation if setting is on OR if user sent voice (reciprocity)
       if (settings.autoPlayVoice || isVoiceMessage) {
          const audio = await synthesizeSpeech(translation.translatedText);
          if (audio) audioUrl = audio;
@@ -87,15 +110,14 @@ export const Chat: React.FC = () => {
         translatedText: translation.translatedText,
         culturalContext: translation.culturalContext,
         audioUrl: audioUrl,
-        isVoice: isVoiceMessage
+        isVoice: isVoiceMessage // Bot replies in same modality
       };
 
       addMessage(conversation.id, botMsg);
       setIsProcessing(false);
       
       if (audioUrl && (settings.autoPlayVoice || isVoiceMessage)) {
-        const audio = new Audio(audioUrl);
-        audio.play().catch(e => console.error("Autoplay blocked", e));
+        playAudio(audioUrl);
       }
 
     }, 1500);
@@ -133,7 +155,7 @@ export const Chat: React.FC = () => {
       setIsRecording(true);
     } catch (err) {
       console.error("Failed to access microphone", err);
-      alert("Microphone access denied or unavailable.");
+      alert("Microphone access denied. Please allow microphone permissions.");
     }
   };
 
@@ -146,19 +168,24 @@ export const Chat: React.FC = () => {
   };
 
   const handlePlayAudio = async (msg: Message, type: 'original' | 'translated') => {
+    // 1. Play existing audio file if available (e.g. recorded voice note)
     if (type === 'original' && msg.audioUrl && msg.isVoice) {
-      new Audio(msg.audioUrl).play();
+      playAudio(msg.audioUrl);
       return;
     }
+
+    // 2. Play pre-synthesized audio if available (e.g. auto-generated response)
+    if (type === 'translated' && msg.audioUrl && !msg.isVoice) {
+      playAudio(msg.audioUrl);
+      return;
+    }
+
+    // 3. Generate TTS on the fly if needed
     const textToSpeak = type === 'original' ? msg.originalText : msg.translatedText;
     if (!textToSpeak) return;
 
-    if (type === 'translated' && msg.audioUrl && !msg.isVoice) {
-      new Audio(msg.audioUrl).play();
-      return;
-    }
     const audio = await synthesizeSpeech(textToSpeak);
-    if (audio) new Audio(audio).play();
+    if (audio) playAudio(audio);
   };
 
   return (
@@ -173,7 +200,7 @@ export const Chat: React.FC = () => {
           <div className="flex-1 flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80 transition-opacity">
              <div className="relative">
                  <img src={otherParticipant.avatar} className="w-10 h-10 rounded-full object-cover" alt="avatar" />
-                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                 <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-white rounded-full ${otherParticipant.status === 'online' ? 'bg-green-500' : 'bg-slate-400'}`}></span>
              </div>
              <div>
                <h2 className="font-bold text-slate-800 text-sm leading-tight font-heading">{otherParticipant.name}</h2>
@@ -226,17 +253,19 @@ export const Chat: React.FC = () => {
                   
                   {msg.isVoice && (
                     <div className="flex items-center gap-2 mb-2 opacity-90 border-b border-white/20 pb-2">
-                       <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                       <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center animate-pulse">
                           <Mic className="w-3 h-3" /> 
                        </div>
                        <span className="text-[10px] uppercase font-bold tracking-wider">Voice Note</span>
                     </div>
                   )}
 
+                  {/* Primary Text (Translated or Original based on logic) */}
                   <div className="text-[15px] leading-relaxed font-sans" dir="auto">
                      {isMe ? msg.originalText : (msg.translatedText || msg.originalText)}
                   </div>
 
+                  {/* Secondary Text (Original for received messages if enabled) */}
                   {(!isMe && settings.showOriginal) && (
                      <div className="mt-2 pt-2 border-t border-slate-100 text-xs text-slate-400 italic font-medium" dir="auto">
                         {msg.originalText}
@@ -248,6 +277,7 @@ export const Chat: React.FC = () => {
                     <button 
                       onClick={() => handlePlayAudio(msg, isMe ? 'original' : 'translated')} 
                       className="hover:scale-110 active:scale-95 transition-transform opacity-80 hover:opacity-100"
+                      title="Play Audio"
                     >
                       <Volume2 className="w-4 h-4" />
                     </button>
@@ -277,7 +307,7 @@ export const Chat: React.FC = () => {
           <div className="flex items-start gap-2 animate-pulse pl-10">
             <div className="bg-white px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-2">
                <Loader2 className="w-4 h-4 animate-spin text-teal-500" />
-               <span className="text-xs font-medium text-slate-400">Translating...</span>
+               <span className="text-xs font-medium text-slate-400">Translating & Speaking...</span>
             </div>
           </div>
         )}
@@ -285,7 +315,7 @@ export const Chat: React.FC = () => {
 
       {/* Modern Input Area */}
       <div className="bg-white p-4 pb-safe">
-        <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-[2rem] border border-slate-200 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-500 transition-all shadow-sm">
+        <div className={`flex items-center gap-2 bg-slate-50 p-1.5 rounded-[2rem] border transition-all shadow-sm ${isRecording ? 'border-red-400 ring-2 ring-red-100' : 'border-slate-200 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-500'}`}>
           
           <button 
              className="p-2.5 text-slate-400 hover:text-teal-600 hover:bg-white rounded-full transition-all"
