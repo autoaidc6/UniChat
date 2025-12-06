@@ -179,7 +179,7 @@ export const synthesizeSpeech = async (text: string, voiceName: string = 'Puck')
     // Convert Raw PCM (24kHz, 1 channel, 16-bit) to WAV
     const pcmData = base64ToUint8Array(base64Audio);
     const wavHeader = createWavHeader(pcmData.length, 24000, 1, 16);
-    const wavBlob = new Blob([wavHeader, pcmData], { type: 'audio/wav' });
+    const wavBlob = new Blob([wavHeader, pcmData] as any[], { type: 'audio/wav' });
 
     return URL.createObjectURL(wavBlob);
 
