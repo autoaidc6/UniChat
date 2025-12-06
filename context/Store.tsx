@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User, Conversation, AppSettings, Message, AVATARS } from '../types';
 
 interface AppState {
@@ -34,6 +34,15 @@ export const StoreProvider = ({ children }: { children?: ReactNode }) => {
     showCulturalContext: true,
     theme: 'light',
   });
+
+  // Effect to apply dark mode class to HTML element
+  useEffect(() => {
+    if (settings.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [settings.theme]);
 
   const [conversations, setConversations] = useState<Conversation[]>([
     {

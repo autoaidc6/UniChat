@@ -66,13 +66,13 @@ export const Home: React.FC = () => {
       </div>
 
       {/* Main List Area */}
-      <div className="flex-1 bg-slate-50 rounded-tl-[2.5rem] rounded-bl-[2.5rem] sm:rounded-bl-[2.5rem] overflow-hidden flex flex-col relative shadow-inner">
+      <div className="flex-1 bg-slate-50 dark:bg-slate-850 rounded-tl-[2.5rem] rounded-bl-[2.5rem] sm:rounded-bl-[2.5rem] overflow-hidden flex flex-col relative shadow-inner transition-colors duration-300">
         
         {/* Header */}
-        <div className="pt-8 px-6 pb-4 bg-white">
+        <div className="pt-8 px-6 pb-4 bg-white dark:bg-slate-900 transition-colors">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-2xl font-heading font-bold text-slate-800">Inbox</h1>
+              <h1 className="text-2xl font-heading font-bold text-slate-800 dark:text-white">Inbox</h1>
               <p className="text-slate-400 text-sm font-medium">
                 {conversations.length} {conversations.length === 1 ? 'Conversation' : 'Conversations'}
               </p>
@@ -85,32 +85,32 @@ export const Home: React.FC = () => {
             <input 
               type="text" 
               placeholder="Search messages..." 
-              className="w-full bg-slate-100/50 pl-12 pr-4 py-3 rounded-2xl border-none focus:ring-2 focus:ring-teal-500/50 focus:bg-white transition-all text-slate-700 font-medium placeholder:text-slate-400"
+              className="w-full bg-slate-100/50 dark:bg-slate-800 pl-12 pr-4 py-3 rounded-2xl border-none focus:ring-2 focus:ring-teal-500/50 focus:bg-white dark:focus:bg-slate-800 transition-all text-slate-700 dark:text-slate-200 font-medium placeholder:text-slate-400"
             />
           </div>
         </div>
 
         {/* List */}
-        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-white">
+        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-white dark:bg-slate-900 transition-colors">
           {filteredConversations.map(conv => {
             const isActive = false; // Could be used for desktop selection
             return (
               <div 
                 key={conv.id}
                 onClick={() => navigate(`/chat/${conv.id}`)}
-                className={`p-4 rounded-3xl transition-all cursor-pointer group flex items-start gap-4 hover:bg-slate-50 ${isActive ? 'bg-slate-50' : ''}`}
+                className={`p-4 rounded-3xl transition-all cursor-pointer group flex items-start gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 ${isActive ? 'bg-slate-50 dark:bg-slate-800' : ''}`}
               >
                 <div className="relative shrink-0">
                   <img src={getChatAvatar(conv)} alt="avatar" className="w-12 h-12 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform" />
-                  <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-[3px] border-white rounded-full"></span>
+                  <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-[3px] border-white dark:border-slate-800 rounded-full transition-colors"></span>
                 </div>
                 
-                <div className="flex-1 min-w-0 pt-0.5 border-b border-slate-100 pb-4 group-last:border-none group-hover:border-transparent transition-colors">
+                <div className="flex-1 min-w-0 pt-0.5 border-b border-slate-100 dark:border-slate-800 pb-4 group-last:border-none group-hover:border-transparent transition-colors">
                   <div className="flex justify-between items-baseline mb-1">
-                    <h3 className="font-bold text-slate-800 truncate text-[15px]">{getChatName(conv)}</h3>
+                    <h3 className="font-bold text-slate-800 dark:text-slate-100 truncate text-[15px]">{getChatName(conv)}</h3>
                     <span className="text-xs font-medium text-slate-400">{new Date(conv.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
-                  <p className="text-slate-500 text-sm truncate leading-snug font-medium opacity-80">{conv.lastMessagePreview}</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm truncate leading-snug font-medium opacity-80">{conv.lastMessagePreview}</p>
                 </div>
               </div>
             );
@@ -119,7 +119,7 @@ export const Home: React.FC = () => {
 
         {/* FAB */}
         <div className="absolute bottom-6 right-6">
-          <button className="w-14 h-14 bg-slate-900 rounded-full text-white shadow-xl shadow-slate-400/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+          <button className="w-14 h-14 bg-slate-900 dark:bg-teal-500 rounded-full text-white shadow-xl shadow-slate-400/40 dark:shadow-teal-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
             <Plus className="w-6 h-6" />
           </button>
         </div>

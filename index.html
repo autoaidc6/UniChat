@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
@@ -16,8 +17,10 @@
             },
             colors: {
               slate: {
+                750: '#2d3748', // Custom lighter slate for cards
                 850: '#1e293b', // Custom dark slate
                 900: '#0f172a',
+                950: '#020617', // Deepest background
               },
               peach: {
                 50: '#fff7ed',
@@ -81,6 +84,10 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
       }
+      .dark .glass {
+        background: rgba(15, 23, 42, 0.8);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
     </style>
   <script type="importmap">
 {
@@ -96,7 +103,7 @@
 }
 </script>
 </head>
-  <body class="bg-gray-100 text-slate-800 flex items-center justify-center min-h-screen">
+  <body class="bg-gray-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex items-center justify-center min-h-screen transition-colors duration-300">
     <div id="root" class="w-full h-full flex justify-center"></div>
     <script type="module" src="./index.tsx"></script>
   </body>
